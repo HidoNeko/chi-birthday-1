@@ -165,7 +165,7 @@
             height: 220px;
             /* Slightly smaller than envelope */
             background: #fff;
-            background-image: url('card-bg.png');
+            background-image: url('photo.jpg');
             background-size: cover;
             background-position: center;
             border-radius: 5px;
@@ -225,12 +225,60 @@
         }
 
         .container.open .card {
-            transform: translateX(-50%) translateY(-150px) scale(1.1);
-            /* Slides up and scales slightly */
-            z-index: 25;
-            /* Moves in front of pocket */
+            animation: slideOut 1.5s forwards ease-in-out;
+            animation-delay: 0.8s;
+            /* waits for flap to open */
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            transition: transform 0.8s 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55), box-shadow 0.8s 0.6s;
+        }
+
+        @keyframes slideOut {
+            0% {
+                transform: translateX(-50%) translateY(0) scale(1);
+                z-index: 5;
+            }
+
+            50% {
+                transform: translateX(-50%) translateY(-280px) scale(1);
+                z-index: 5;
+            }
+
+            51% {
+                z-index: 25;
+            }
+
+            100% {
+                transform: translateX(-50%) translateY(-160px) scale(1.1);
+                z-index: 25;
+            }
+        }
+
+        @keyframes slideIn {
+            0% {
+                transform: translateX(-50%) translateY(-160px) scale(1.1);
+                z-index: 25;
+            }
+
+            50% {
+                transform: translateX(-50%) translateY(-280px) scale(1);
+                z-index: 25;
+            }
+
+            51% {
+                z-index: 5;
+            }
+
+            100% {
+                transform: translateX(-50%) translateY(0) scale(1);
+                z-index: 5;
+            }
+        }
+
+        .container.close .card {
+            animation: slideIn 1.5s forwards ease-in-out;
+        }
+
+        .container.close .flap {
+            transition-delay: 1.2s;
         }
 
         /* Mobile adjustment */
@@ -293,11 +341,33 @@
         <div class="instruction">Chạm để mở thiệp</div>
     </div>
 
+    <video id="bgVideo" loop
+        style="position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -1; opacity: 0; transition: opacity 1s; object-fit: cover;">
+        <source src="khmsn.mp4" type="video/mp4">
+    </video>
+
     <script>
         const container = document.getElementById('envelopeContainer');
+        const video = document.getElementById('bgVideo');
 
         container.addEventListener('click', () => {
-            container.classList.toggle('open');
+            if (container.classList.contains('open')) {
+                container.classList.remove('open');
+                container.classList.add('close');
+
+                // Pause video and fade out
+                video.style.opacity = '0';
+                setTimeout(() => video.pause(), 1000); // Pause after fade out
+            } else {
+                container.classList.remove('close');
+                container.classList.add('open');
+
+                // Play video and fade in
+                video.currentTime = 0; // Reset to start if desired, or remove to resume
+                video.volume = 0.2;
+                video.play().catch(e => console.log("Audio play failed usually due to user interaction policy:", e));
+                video.style.opacity = '1';
+            }
 
             const instruction = document.querySelector('.instruction');
             if (container.classList.contains('open')) {
