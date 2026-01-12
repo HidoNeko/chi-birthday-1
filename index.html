@@ -163,30 +163,83 @@
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 310px;
-            height: 220px;
-            /* Slightly smaller than envelope */
-            background: #fff;
-            background-image: url('photo.jpg');
-            background-size: cover;
-            background-position: center;
+            width: 320px;
+            height: 230px;
+            /* No background on parent, just a container for 3D */
+            background: transparent;
             border-radius: 5px;
-            transition: transform 0.8s 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.27), z-index 0s 0.6s;
+            transition: transform 0.8s 0.6s ease-in-out, box-shadow 0.8s 0.6s, z-index 0.2s 0.6s;
             z-index: 5;
-            /* Initially inside */
+            transform-style: preserve-3d;
+            box-shadow: none;
+            /* Shadow moves to faces */
+        }
+
+        .card-face {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            text-align: center;
+        }
+
+        .card-front {
+            background-color: #fff;
+            background-image: url('photo.jpg');
+            background-size: cover;
+            /* Full image */
+            background-position: center;
+            z-index: 2;
+        }
+
+        .card-back {
+            background: #fff;
+            transform: rotateY(180deg);
             padding: 20px;
             box-sizing: border-box;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            background-image: url('card-bg.png');
+            /* Optional texture for text side */
+            background-size: cover;
+        }
+
+        .card.flipped {
+            /* Keep the slideOut position but add rotation */
+            /* We need to handle this carefully in JS or complicated CSS. 
+                Easier strategy: Apply rotation to a inner wrapper or append rotateY to the current transform in JS. 
+                However, since we use Keyframes for slideOut, adding a class that changes transform might conflict.
+                Alternative: The slideOut animation handles position. The .flipped class handles rotation.
+                BUT, transform property is shared. 
+                
+                Better approach: 
+                The .card element does the sliding (move).
+                Inside .card, add a .card-inner wrapper that does the rotating.
+             */
+        }
+
+        /* New structure styles */
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
         }
 
         .card-content {
-            background: rgba(255, 255, 255, 0.85);
-            /* Readability layer */
+            background: rgba(255, 255, 255, 0.9);
             padding: 15px;
             border-radius: 10px;
             width: 90%;
@@ -227,20 +280,20 @@
         }
 
         .container.open .card {
+            /* Animation handles the movement */
             animation: slideOut 1.5s forwards ease-in-out;
             animation-delay: 0.8s;
-            /* waits for flap to open */
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            /* z-index managed in keyframes */
         }
 
         @keyframes slideOut {
             0% {
-                transform: translateX(-50%) translateY(0) scale(1);
+                transform: translateX(-50%) translateY(0) scale(1) translateZ(0);
                 z-index: 5;
             }
 
             50% {
-                transform: translateX(-50%) translateY(-280px) scale(1);
+                transform: translateX(-50%) translateY(-280px) scale(1) translateZ(0);
                 z-index: 5;
             }
 
@@ -249,19 +302,19 @@
             }
 
             100% {
-                transform: translateX(-50%) translateY(-160px) scale(1.1);
+                transform: translateX(-50%) translateY(-160px) scale(1.1) translateZ(200px);
                 z-index: 25;
             }
         }
 
         @keyframes slideIn {
             0% {
-                transform: translateX(-50%) translateY(-160px) scale(1.1);
+                transform: translateX(-50%) translateY(-160px) scale(1.1) translateZ(200px);
                 z-index: 25;
             }
 
             50% {
-                transform: translateX(-50%) translateY(-280px) scale(1);
+                transform: translateX(-50%) translateY(-280px) scale(1) translateZ(0);
                 z-index: 25;
             }
 
@@ -270,7 +323,7 @@
             }
 
             100% {
-                transform: translateX(-50%) translateY(0) scale(1);
+                transform: translateX(-50%) translateY(0) scale(1) translateZ(0);
                 z-index: 5;
             }
         }
@@ -331,12 +384,21 @@
             <div class="pocket-sides"></div>
 
             <div class="card">
-                <div class="card-content">
-                    <h1>Mời Sinh Nhật</h1>
-                    <p>Thân mời bạn đến dự tiệc sinh nhật vui vẻ!</p>
-                    <p class="highlight">Thời gian: 19:00, Chủ Nhật</p>
-                    <p>Tại nhà của Chi</p>
-                    <p>Mong bạn sẽ đến chung vui!</p>
+                <div class="card-inner">
+                    <!-- Front Side: Photo -->
+                    <div class="card-face card-front"></div>
+
+                    <!-- Back Side: Text -->
+                    <div class="card-face card-back">
+                        <div class="card-content">
+                            <h1>Mời Sinh Nhật</h1>
+                            <p>Thân mời bạn đến dự tiệc sinh nhật vui vẻ!</p>
+                            <p class="highlight">Thời gian: 19:00, Chủ Nhật</p>
+                            <p>Tại nhà của Chi</p>
+                            <p>Mong bạn sẽ đến chung vui!</p>
+                            <p style="font-size: 0.8rem; margin-top: 10px; color: #888;">(Chạm để lật)</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -364,6 +426,9 @@
                 container.classList.remove('close');
                 container.classList.add('open');
 
+                // Reset flip state
+                document.querySelector('.card').classList.remove('flipped');
+
                 // Play video and fade in
                 video.currentTime = 0;
                 video.volume = 0.2; // Note: iOS ignores this and uses hardware volume
@@ -390,6 +455,16 @@
                 createConfetti();
             } else {
                 instruction.style.opacity = '0.8';
+            }
+        });
+
+        // Card Flip Logic
+        const card = document.querySelector('.card');
+        card.addEventListener('click', (e) => {
+            // Only allow flip if envelope is open
+            if (container.classList.contains('open')) {
+                e.stopPropagation(); // Prevent envelope from closing
+                card.classList.toggle('flipped');
             }
         });
 
