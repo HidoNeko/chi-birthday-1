@@ -365,9 +365,19 @@
                 container.classList.add('open');
 
                 // Play video and fade in
-                video.currentTime = 0; // Reset to start if desired, or remove to resume
-                video.volume = 0.2;
-                video.play().catch(e => console.log("Audio play failed usually due to user interaction policy:", e));
+                video.currentTime = 0;
+                video.volume = 0.2; // Note: iOS ignores this and uses hardware volume
+                video.muted = false;
+
+                var promise = video.play();
+                if (promise !== undefined) {
+                    promise.then(_ => {
+                        // playback started
+                        video.volume = 0.2; // Try setting again after start
+                    }).catch(error => {
+                        console.log("Auto-play was prevented:", error);
+                    });
+                }
                 video.style.opacity = '1';
             }
 
