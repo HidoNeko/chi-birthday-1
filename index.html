@@ -293,17 +293,72 @@
             transition-delay: 2.8s;
         }
 
+        /* Mobile specific animations */
+        @keyframes slideOutMobile {
+            0% {
+                transform: translateX(-50%) translateY(0) scale(1) translateZ(0);
+                z-index: 5;
+            }
+
+            40% {
+                /* Pull up just enough to clear */
+                transform: translateX(-50%) translateY(-300px) scale(0.9) translateZ(0);
+                z-index: 5;
+            }
+
+            41% {
+                z-index: 25;
+            }
+
+            100% {
+                /* Postion relative to the LOWERED envelope */
+                /* Envelope is at +180px, so -250px here puts card at -70px screen center */
+                transform: translateX(-50%) translateY(-250px) scale(1.1) translateZ(200px);
+                z-index: 25;
+            }
+        }
+
+        @keyframes slideInMobile {
+            0% {
+                transform: translateX(-50%) translateY(-250px) scale(1.1) translateZ(200px);
+                z-index: 25;
+            }
+
+            40% {
+                transform: translateX(-50%) translateY(-300px) scale(0.9) translateZ(0);
+                z-index: 25;
+            }
+
+            41% {
+                z-index: 5;
+            }
+
+            100% {
+                transform: translateX(-50%) translateY(0) scale(1) translateZ(0);
+                z-index: 5;
+            }
+        }
+
         /* Mobile adjustment */
         @media (max-width: 480px) {
             .envelope {
                 /* Scale down significantly properly on mobile */
                 transform: scale(0.65);
                 transform-origin: center center;
+                transition: transform 0.6s ease;
             }
 
-            /* Adjust body if needed to ensure centering works with scale */
-            body {
-                /* height: 100vh; is already there */
+            .container.open .envelope {
+                /* Move envelope down so card can be centered above it */
+                transform: translateY(180px) scale(0.65);
+            }
+
+            .container.open .card {
+                animation-name: slideOutMobile;
+            }
+
+            .container.close .card {
+                animation-name: slideInMobile;
             }
         }
     </style>
