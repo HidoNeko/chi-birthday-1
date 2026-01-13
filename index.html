@@ -293,6 +293,67 @@
             transition-delay: 2.8s;
         }
 
+        /* Flip Hint Text */
+        .flip-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1s ease;
+            transition-delay: 0s;
+        }
+
+        /* Customize hint for back side if needed */
+        .card-back .flip-hint {
+            color: rgba(120, 120, 120, 0.8);
+            /* Darker text for white background */
+            text-shadow: none;
+        }
+
+        /* Show front hint only when open and NOT flipped */
+        .container.open .card:not(.flipped) .card-front .flip-hint {
+            opacity: 1;
+            transition-delay: 1.5s;
+            /* Wait for slideOut animation */
+            animation: pulseHint 2s infinite 2s;
+        }
+
+        /* Show back hint only when open and flipped */
+        .container.open .card.flipped .card-back .flip-hint {
+            opacity: 1;
+            transition-delay: 1s;
+            /* Short delay after flip */
+            animation: pulseHint 2s infinite 1s;
+        }
+
+        /* Hide hints when state changes */
+        .card.flipped .card-front .flip-hint,
+        .card:not(.flipped) .card-back .flip-hint {
+            opacity: 0;
+            transition-delay: 0s;
+        }
+
+        @keyframes pulseHint {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 0.7;
+            }
+        }
+
         /* Mobile specific animations */
         @keyframes slideOutMobile {
             0% {
@@ -375,7 +436,9 @@
             <div class="card">
                 <div class="card-inner">
                     <!-- Front Side: Photo -->
-                    <div class="card-face card-front"></div>
+                    <div class="card-face card-front">
+                        <div class="flip-hint">Chạm để lật</div>
+                    </div>
 
                     <!-- Back Side: Text -->
                     <div class="card-face card-back">
@@ -385,8 +448,9 @@
                             <p class="highlight">Thời gian: 19:00, Chủ Nhật</p>
                             <p>Tại nhà của Chi</p>
                             <p>Mong bạn sẽ đến chung vui!</p>
-                            <p style="font-size: 0.8rem; margin-top: 10px; color: #888;">(Chạm để lật)</p>
+                            <!-- <p style="font-size: 0.8rem; margin-top: 10px; color: #888;">(Chạm để lật)</p> -->
                         </div>
+                        <div class="flip-hint">Chạm để lật</div>
                     </div>
                 </div>
             </div>
