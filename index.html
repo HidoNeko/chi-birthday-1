@@ -93,6 +93,7 @@
             z-index: 10;
             transition: transform 0.6s ease;
             transform-style: preserve-3d;
+            will-change: transform;
         }
 
         .envelope:hover {
@@ -111,6 +112,7 @@
             clip-path: polygon(0 0, 100% 0, 50% 50%);
             /* V-shape flap */
             transform-origin: top;
+            transform: translateZ(20px);
             transition: transform 0.6s 0.4s ease-in-out, z-index 0.2s 0.4s;
             z-index: 30;
             filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2));
@@ -128,6 +130,7 @@
             clip-path: polygon(0 0, 50% 45%, 100% 0, 100% 100%, 0 100%);
             z-index: 20;
             border-radius: 0 0 10px 10px;
+            transform: translateZ(10px);
         }
 
         /* Side borders illusion (optional) */
@@ -141,7 +144,7 @@
             bottom: 20px;
             /* Peek out slightly */
             left: 50%;
-            transform: translateX(-50%);
+            transform: translateX(-50%) translateZ(0);
             width: 270px;
             height: 360px;
             /* 3:4 Ratio (270 * 1.33 = 360) */
@@ -151,6 +154,7 @@
             z-index: 5;
             transform-style: preserve-3d;
             box-shadow: none;
+            will-change: transform;
         }
 
         .card-face {
